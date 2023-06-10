@@ -15,15 +15,15 @@ class Mixin:
 
     def _compute_class_balance(self, class_balance=None, Y_dev=None):
         # generate class balance of Ys
-        Ys_ordered = [ 'Y_{}'.format(i) for i in range(self.v) ]
-        cardinalities = [ 2 for i in range(self.v) ]
+        Ys_ordered = [ 'Y_0' ]
+        cardinalities = [ self.c ]
         if class_balance is not None:
             class_balance = class_balance / sum(class_balance)
             cb = JointProbabilityDistribution(
                 Ys_ordered, cardinalities, class_balance
             )
         elif Y_dev is not None:
-            Ys_ordered = [ 'Y_{}'.format(i) for i in range(self.v) ]
+            Ys_ordered = [ 'Y_0' ]
             vals = { Y: (-1, 1) for Y in Ys_ordered }
             Y_vecs = sorted([
                 [ vec_dict[Y] for Y in Ys_ordered ]
@@ -42,7 +42,7 @@ class Mixin:
                     for Y_vec in Y_vecs
                 ])
         else:
-            num_combinations = 2 ** self.v
+            num_combinations = self.c
             cb = JointProbabilityDistribution(
                 Ys_ordered, cardinalities, [
                     1. / num_combinations for i in range(num_combinations)
