@@ -4,13 +4,13 @@ from flyingsquid import _graphs
 from flyingsquid import _observables
 from flyingsquid import _lm_parameters
 import numpy as np
+import itertools
 
 class LabelModel(_triplets.Mixin, _graphs.Mixin, _observables.Mixin,
                  _lm_parameters.Mixin):
     
     def __init__(self, class_balance):
         self.acc = None
-        # self.lambda_params = None
         self.abstain_rate = None
         self.class_balance = class_balance
     
@@ -34,40 +34,35 @@ class LabelModel(_triplets.Mixin, _graphs.Mixin, _observables.Mixin,
             Outputs: None.
         '''
         n, m, d = L_train.shape
+
+        self.abstain_rate = 1 - np.mean(np.abs(np.prod(L_train, axis=-1)), axis=0)
         self.acc = np.zeros(m)
-        # self.lambda_params = np.zeros((m,d))
-        self.abstain_rate = np.zeros(m)
+
+
+        moments = np.full((m,m), np.nan)
+        for i in range(m):
+            for j in range(i+1,m):
+                moments[i,j] = self._compute_moment(L_train[:,i], L_train[:,j])
+                moments[j,i] = moments[i,j]
+        
 
         for i in range(m):
             acc_i = []
-            lambda_i = L_train[:,i]
 
-            abstain = np.unique(np.where(lambda_i[:,] == 0)[0])
-            self.abstain_rate[i] = abstain.size / n
-
-            ks = set(range(m))
-            ks.remove(i)
-            for k in ks:
-                lambda_k = L_train[:,k]
-                moment_ik = self._compute_moment(lambda_i, lambda_k)
-
-                ls = set(ks)
-                ls.remove(k)
-                for l in ls:
-                    lambda_l = L_train[:,l]
-                    moment_il = self._compute_moment(lambda_i, lambda_l)
-                    moment_kl = self._compute_moment(lambda_k, lambda_l)
-
-                    acc_kl = np.sqrt(np.abs(moment_ik * moment_il / moment_kl))
+            for k, l in itertools.combinations(set(range(m)) - {i}, 2):
+                acc_kl = np.sqrt(np.abs(moments[i,k] * moments[i,l] / moments[k,l]))
+                if not np.isnan(acc_kl):
                     acc_i.append(acc_kl)
-            
 
             self.acc[i] = np.mean(acc_i)
-     
+
 
 
     def _compute_moment(self, lambda_i, lambda_j):
         non_abstain = np.nonzero(np.prod(lambda_i * lambda_j, axis=-1))
+        if non_abstain[0].size == 0:
+            return np.nan
+
         lambda_i = lambda_i[non_abstain]
         lambda_j = lambda_j[non_abstain]
 
