@@ -15,11 +15,12 @@ d = 2
 cb = np.full(d, 1/d)
 
 L_train, L_dev, Y_dev = synthetic_data_basics(d=d)
-print("Data Generated")
+print('Generated Data')
 
 label_model = LabelModel(cb)
 
 label_model.fit(L_train)
+print('Trained Label Model')
 
 preds = label_model.predict(L_dev).reshape(Y_dev.shape)
 accuracy = np.sum(preds * Y_dev) / Y_dev.shape[0]

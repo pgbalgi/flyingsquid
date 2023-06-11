@@ -81,16 +81,17 @@ class LabelModel(_triplets.Mixin, _graphs.Mixin, _observables.Mixin,
         proba = np.zeros((n,d))
 
         abstain = np.nonzero(np.prod(L_matrix, axis=-1) == 0)
+        classes = np.argmax(L_matrix, axis=-1)
 
         for c in range(d):
             y = np.zeros(d)
             y[c] = 1
 
             match = L_matrix @ y
-            # mismatches = np.nonzero(match == -1)
+            mismatches = np.nonzero(match == -1)
 
             prob_c = (1 + match * self.acc) / 2
-            # prob_c[mismatches] *= self.class_balance / (1 - self.class_balance[c])
+            prob_c[mismatches] *= self.class_balance[classes[mismatches]] / (1 - self.class_balance[c])
             prob_c *= 1 - self.abstain_rate
             prob_c[abstain] = self.abstain_rate[abstain[-1]]
 
