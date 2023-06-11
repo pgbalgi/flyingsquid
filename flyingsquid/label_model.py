@@ -68,7 +68,7 @@ class LabelModel(_triplets.Mixin, _graphs.Mixin, _observables.Mixin,
 
     def _compute_moment(self, lambda_i, lambda_j):
         non_abstain_i = np.unique(np.where(lambda_i[:,] != 0)[0])
-        non_abstain_j = np.unique(np.where(lambda_i[:,] != 0)[0])
+        non_abstain_j = np.unique(np.where(lambda_j[:,] != 0)[0])
         non_abstain = np.intersect1d(non_abstain_i, non_abstain_j)
 
         lambda_i = lambda_i[non_abstain]

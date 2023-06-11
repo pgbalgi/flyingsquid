@@ -11,10 +11,11 @@ You can run this file from the examples folder.
 from flyingsquid.label_model import LabelModel
 from examples.tutorials.tutorial_helpers import *
 
-d = 3
+d = 2
 cb = np.full(d, 1/d)
 
 L_train, L_dev, Y_dev = synthetic_data_basics(d=d)
+print("Data Generated")
 
 label_model = LabelModel(cb)
 
