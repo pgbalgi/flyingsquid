@@ -24,12 +24,10 @@ class LabelModel(_triplets.Mixin, _graphs.Mixin, _observables.Mixin,
         return obj
         
     def fit(self, L_train):
-        '''Compute the marginal probabilities of each clique and separator set in the junction tree.
+        '''Compute the accuracy of each LF.
         
             L_train: an n x m x d matrix of LF outputs. L_train[k][i] is the value of \lambda_i on item k.
                 1 means positive, -1 means negative, 0 means abstain.
-            class_balance: a vector of the probability of each class.
-            verbose: if True, print out messages to stderr as we make progress
 
             Outputs: None.
         '''
@@ -75,7 +73,7 @@ class LabelModel(_triplets.Mixin, _graphs.Mixin, _observables.Mixin,
         L_matrix: a n x m x d matrix of of LF outputs. L_matrix[k][i] is the value of \lambda_i on item k.
             1 means positive, -1 means negative, 0 means abstain.
                 
-        Outputs: a d vector of probabilities
+        Outputs: a n x d matrix of probabilities
         '''
         n, m, d = L_matrix.shape
         proba = np.zeros((n,d))
@@ -109,7 +107,7 @@ class LabelModel(_triplets.Mixin, _graphs.Mixin, _observables.Mixin,
         L_matrix: a n x m x d matrix of LF outputs. L_matrix[k][i] is the value of \lambda_i on item k.
             1 means positive, -1 means negative, 0 means abstain.
                 
-        Outputs: a d matrix of predicted outputs.
+        Outputs: a n x d matrix of predicted outputs.
         '''
         n, m, d = L_matrix.shape
         one_hot_pred = np.zeros((n,d))
