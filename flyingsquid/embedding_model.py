@@ -22,7 +22,10 @@ class EmbeddingModel:
         n_clusters = self.cluster_model.get_params(deep=False)['n_clusters']
         clusters = self.cluster_model.predict(embeddings)
 
-        pred = np.zeros(embeddings.shape[:-1] + (annotations.shape[-1],))
+        n = embeddings.shape[:-1]
+        d = annotations.shape[-1]
+        pred = np.zeros(n + (d,))
+
         for i in range(n_clusters):
             cluster = np.nonzero(clusters == i)
             pred[cluster] = self.label_models[i].predict(annotations[cluster])
